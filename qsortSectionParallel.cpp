@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <chrono>
 #include <string.h>
+#include "omp.h"
 using namespace std;
 using namespace std::chrono;
 
@@ -29,6 +30,7 @@ int partition(int array[], int low, int high) {
 
   // traverse each element of the array
   // compare them with the pivot
+  #pragma omp parallel for reduction(+: i)
   for (int j = low; j < high; j++) {
     if (array[j] <= pivot) {
         
@@ -56,11 +58,17 @@ void quickSort(int array[], int low, int high) {
     // elements greater than pivot are on righ of pivot
     int pi = partition(array, low, high);
 
-    // recursive call on the left of pivot
-    quickSort(array, low, pi - 1);
+    #pragma omp parallel sections shared(array)
+    {
+      // recursive call on the left of pivot
+      #pragma omp section
+        quickSort(array, low, pi - 1);
 
-    // recursive call on the right of pivot
-    quickSort(array, pi + 1, high);
+      // recursive call on the right of pivot
+      #pragma omp section
+        quickSort(array, pi + 1, high);
+
+    }
   }
 }
 
@@ -74,6 +82,7 @@ int main(int argc, char * argv[]) {
   // Get starting timepoint
   auto start = high_resolution_clock::now();
 
+  #pragma omp parallel for
   for (int i = 0; i < N; i++) {
     write_file << rand() % 100 << ",";
   }
@@ -94,6 +103,7 @@ int main(int argc, char * argv[]) {
   quickSort(heap_numbers, 0, N-1);
 
   ofstream write_sorted_file("write_sorted_file.csv");
+  #pragma omp parallel for
   for (int i = 0; i < N; i++) {
     write_sorted_file << heap_numbers[i] << ",";
   }

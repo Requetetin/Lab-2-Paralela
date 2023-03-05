@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <chrono>
 #include <string.h>
+#include "omp.h"
 using namespace std;
 using namespace std::chrono;
 
@@ -74,6 +75,7 @@ int main(int argc, char * argv[]) {
   // Get starting timepoint
   auto start = high_resolution_clock::now();
 
+  #pragma omp parallel for
   for (int i = 0; i < N; i++) {
     write_file << rand() % 100 << ",";
   }
@@ -94,6 +96,7 @@ int main(int argc, char * argv[]) {
   quickSort(heap_numbers, 0, N-1);
 
   ofstream write_sorted_file("write_sorted_file.csv");
+  #pragma omp parallel for
   for (int i = 0; i < N; i++) {
     write_sorted_file << heap_numbers[i] << ",";
   }
