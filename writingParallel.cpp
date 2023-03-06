@@ -75,8 +75,9 @@ int main(int argc, char * argv[]) {
   // Get starting timepoint
   auto start = high_resolution_clock::now();
 
-  #pragma omp parallel for
+  #pragma omp parallel for ordered
   for (int i = 0; i < N; i++) {
+    #pragma omp ordered
     write_file << rand() % 100 << ",";
   }
   write_file.close();
@@ -96,8 +97,9 @@ int main(int argc, char * argv[]) {
   quickSort(heap_numbers, 0, N-1);
 
   ofstream write_sorted_file("write_sorted_file.csv");
-  #pragma omp parallel for
+  #pragma omp parallel for ordered
   for (int i = 0; i < N; i++) {
+    #pragma omp ordered
     write_sorted_file << heap_numbers[i] << ",";
   }
   write_sorted_file.close();
