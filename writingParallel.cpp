@@ -71,6 +71,7 @@ int main(int argc, char * argv[]) {
   srand(time(NULL));
   ofstream write_file("random_numbers.csv");
   int *heap_numbers = new int[N];
+  omp_set_num_threads(12);
 
   // Get starting timepoint
   auto start = high_resolution_clock::now();
